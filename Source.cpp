@@ -1,8 +1,15 @@
 #include "CommandHandler.hpp"
 
+auto g_pCommandHandler = std::make_unique<CommandHandler>();
+
 void cmds(const std::vector<std::string>& args)
 {
-	std::cout << "hi" << std::endl;
+	std::vector<Command> commandList{};
+	g_pCommandHandler->GetCommandList(commandList);
+	for (auto cmd : commandList)
+	{
+		std::cout << cmd.GetName() << " : " << cmd.GetDescription() << std::endl;
+	}
 }
 
 int main()
@@ -10,9 +17,7 @@ int main()
 	SetConsoleTitleA("Demos");
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 0xC);
 
-	auto commandHandler = std::make_unique<CommandHandler>();
-
-	commandHandler->RegisterCommand("cmds", "Prints a list of commands to the console.", 0, cmds);
+	g_pCommandHandler->RegisterCommand("cmds", "Prints a list of commands to the console.", 0, cmds);
 
 	while (true)
 	{
@@ -20,8 +25,8 @@ int main()
 		std::string cmdtemp{};
 		std::getline(std::cin, cmdtemp);
 		std::vector<std::string> cmd{};
-		commandHandler->SplitCommand(cmdtemp, cmd);
-		if (!commandHandler->ExecuteCommand(cmd))
+		g_pCommandHandler->SplitCommand(cmdtemp, cmd);
+		if (!g_pCommandHandler->ExecuteCommand(cmd))
 		{
 			std::cout << "Command doesn't exist! Enter 'cmds' for a list of commands." << std::endl;
 		}

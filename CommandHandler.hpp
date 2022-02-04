@@ -32,6 +32,7 @@ private:
 public:
     void RegisterCommand(const std::string name, const std::string description, const int argCount, const std::function<void(const std::vector<std::string>&)> function);
 	bool ExecuteCommand(const std::vector<std::string>& args);
-	void SplitCommand(const std::string rawcmd, std::vector<std::string>& placeholder);
+	void GetCommandList(std::vector<Command>& buffer);
+	void SplitCommand(const std::string rawcmd, std::vector<std::string>& buffer);
 };
 

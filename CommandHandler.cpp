@@ -59,11 +59,16 @@ bool CommandHandler::ExecuteCommand(const std::vector<std::string>& args)
 	return false;
 }
 
-void CommandHandler::SplitCommand(const std::string rawcmd, std::vector<std::string>& placeholder)
+void CommandHandler::GetCommandList(std::vector<Command>& buffer)
+{
+	buffer = m_CommandList;
+}
+
+void CommandHandler::SplitCommand(const std::string rawcmd, std::vector<std::string>& buffer)
 {
 	std::stringstream ss(rawcmd);
 	std::istream_iterator<std::string> IteratorStart(ss);
 	std::istream_iterator<std::string> IteratorStop{};
 
-	placeholder.assign(IteratorStart, IteratorStop);
+	buffer.assign(IteratorStart, IteratorStop);
 }
