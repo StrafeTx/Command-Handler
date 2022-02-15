@@ -45,7 +45,7 @@ bool CommandHandler::ExecuteCommand(const std::vector<std::string>& args)
 	{
 		try
 		{
-			if (cmd.GetName() == args[0] && args.size() == (cmd.GetArgCount() + 1))
+			if (args.size() == (cmd.GetArgCount() + 1) && cmd.GetName() == args[0])
 			{
 				cmd.Execute(args);
 				return true;
