@@ -4,11 +4,11 @@ auto g_pCommandHandler = std::make_unique<CommandHandler>();
 
 void cmds(const std::vector<std::string>& args)
 {
-	std::vector<Command> commandList{};
+	std::vector<std::shared_ptr<Command>> commandList{};
 	g_pCommandHandler->GetCommandList(commandList);
 	for (auto cmd : commandList)
 	{
-		std::cout << cmd.GetName() << " : " << cmd.GetDescription() << std::endl;
+		std::cout << cmd->GetName() << " : " << cmd->GetDescription() << std::endl;
 	}
 }
 
