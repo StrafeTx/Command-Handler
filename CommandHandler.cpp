@@ -1,5 +1,39 @@
 #include "CommandHandler.hpp"
 
+Toggle::Toggle()
+{
+	m_name = "Unset";
+	m_description = "Unset";
+	m_toggled = false;
+}
+
+Toggle::Toggle(const std::string name, const std::string description, bool initialState)
+{
+	m_name = name;
+	m_description = description;
+	m_toggled = initialState;
+}
+
+const std::string Toggle::GetName()
+{
+	return m_name;
+}
+
+const std::string Toggle::GetDescription()
+{
+	return m_description;
+}
+
+const bool Toggle::GetState()
+{
+	return m_toggled;
+}
+
+void Toggle::SetState(const bool newState)
+{
+	m_toggled = newState;
+}
+
 Command::Command(const std::string name, const std::string description, const int argCount, const std::function<void(const std::vector<std::string>&)> function)
 {
 	m_name = name;
@@ -36,39 +70,64 @@ void Command::Execute(const std::vector<std::string>& args)
 void CommandHandler::RegisterCommand(const std::string name, const std::string description, const int argCount, const std::function<void(const std::vector<std::string>&)> function)
 {
 	Command command{ name, description, argCount, function };
-	m_CommandList.push_back(command);
+	m_commandList.push_back(std::make_shared<Command>(command));
 }
 
-bool CommandHandler::ExecuteCommand(const std::vector<std::string>& args)
+void CommandHandler::RegisterToggle(const std::string name, const std::string description, const bool initialValue)
 {
-	for (auto cmd : m_CommandList)
+	Toggle toggle{ name, description, initialValue };
+	m_toggleList.push_back(std::make_shared<Toggle>(toggle));
+}
+
+const bool CommandHandler::ExecuteCommand(const std::vector<std::string>& args)
+{
+	for (auto cmd : m_commandList)
 	{
 		try
 		{
-			if (args.size() == (cmd.GetArgCount() + 1) && cmd.GetName() == args[0])
+			if (args.size() == (cmd->GetArgCount() + 1) && cmd->GetName() == args[0])
 			{
-				cmd.Execute(args);
+				cmd->Execute(args);
 				return true;
 			}
 		}
 		catch (std::exception e)
 		{
-			std::cout << e.what() << std::endl;
+			std::cerr << e.what() << std::endl;
 		}
 	}
 	return false;
 }
 
-void CommandHandler::GetCommandList(std::vector<Command>& buffer)
+void CommandHandler::GetCommandList(std::vector<std::shared_ptr<Command>>& buffer)
 {
-	buffer = m_CommandList;
+	buffer = m_commandList;
 }
 
-void CommandHandler::SplitCommand(const std::string rawcmd, std::vector<std::string>& buffer)
+void CommandHandler::GetToggleList(std::vector<std::shared_ptr<Toggle>>& buffer)
+{
+	buffer = m_toggleList;
+}
+
+std::shared_ptr<Toggle> CommandHandler::GetToggle(const std::string search)
+{
+	std::vector<std::shared_ptr<Toggle>> toggles{};
+	GetToggleList(toggles);
+	for (auto toggle : toggles)
+	{
+		if (toggle->GetName() == search)
+		{
+			return toggle;
+		}
+	}
+	return nullptr;
+}
+
+void CommandHandler::SplitCommand(const std::string rawcmd, std::vector<std::string>& placeholder)
 {
 	std::stringstream ss(rawcmd);
 	std::istream_iterator<std::string> IteratorStart(ss);
 	std::istream_iterator<std::string> IteratorStop{};
 
-	buffer.assign(IteratorStart, IteratorStop);
+	placeholder.assign(IteratorStart, IteratorStop);
 }
